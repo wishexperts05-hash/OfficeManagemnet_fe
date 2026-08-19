@@ -140,10 +140,18 @@ export default function ProfilePage() {
 
   if (loading) return <p className="muted">{t("loading")}</p>;
 
-  const display = account || authUser;
+  const display: ProfileUser = {
+    id: authUser?.id,
+    mobile: authUser?.mobile,
+    status: authUser?.status,
+    accountType: authUser?.accountType,
+    preferredLocale: authUser?.preferredLocale,
+    isMpinSet: authUser?.isMpinSet,
+    ...account,
+  };
   const titleName = isEmployer
     ? companyProfileLabel(company || employerProfile, locale, t("profile"))
-    : membership?.fullName || display?.mobile || t("profile");
+    : membership?.fullName || display.mobile || t("profile");
 
   return (
     <div className="page">
@@ -153,7 +161,7 @@ export default function ProfilePage() {
           <h2 className="display page-title">{titleName}</h2>
           <p className="muted page-sub">{t("profileSub")}</p>
         </div>
-        <span className={`badge ${display?.status === "active" ? "ok" : "warn"}`}>
+        <span className={`badge ${display.status === "active" ? "ok" : "warn"}`}>
           {isEmployer ? t("roleEmployer") : t("roleEmployee")}
         </span>
       </div>
@@ -164,26 +172,26 @@ export default function ProfilePage() {
         <div className="panel">
           <h3 className="chart-card-title">{t("accountDetails")}</h3>
           <div className="detail-grid">
-            <Detail label={t("mobile")} value={display?.mobile} />
-            <Detail label={t("email")} value={display?.email} />
+            <Detail label={t("mobile")} value={display.mobile} />
+            <Detail label={t("email")} value={display.email} />
             <Detail
               label={t("accountType")}
               value={isEmployer ? t("roleEmployer") : t("roleEmployee")}
             />
-            <Detail label={t("status")} value={display?.status} />
+            <Detail label={t("status")} value={display.status} />
             <Detail
               label={t("language")}
               value={
-                display?.preferredLocale === "hi"
+                display.preferredLocale === "hi"
                   ? "हिन्दी"
-                  : display?.preferredLocale === "en"
+                  : display.preferredLocale === "en"
                     ? "English"
-                    : display?.preferredLocale
+                    : display.preferredLocale
               }
             />
-            <Detail label={t("mpinSet")} value={display?.isMpinSet} yesLabel={t("yes")} noLabel={t("no")} />
-            <Detail label={t("lastLogin")} value={fmtDateTime(display?.lastLoginAt)} />
-            <Detail label={t("createdAt")} value={fmtDateTime(display?.createdAt)} />
+            <Detail label={t("mpinSet")} value={display.isMpinSet} yesLabel={t("yes")} noLabel={t("no")} />
+            <Detail label={t("lastLogin")} value={fmtDateTime(display.lastLoginAt)} />
+            <Detail label={t("createdAt")} value={fmtDateTime(display.createdAt)} />
           </div>
         </div>
 
