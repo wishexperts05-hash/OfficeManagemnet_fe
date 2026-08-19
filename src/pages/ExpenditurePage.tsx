@@ -42,7 +42,7 @@ const totalsFromList = (list: Expenditure[]) => {
 
 export default function ExpenditurePage() {
   const { t } = useTranslation();
-  const { user, activeEmployerId } = useAppSelector((s) => s.auth);
+  const { user } = useAppSelector((s) => s.auth);
   const isEmployer = user?.accountType === "employer";
   const [items, setItems] = useState<Expenditure[]>([]);
   const [summary, setSummary] = useState<{ credit: number; debit: number; balance: number } | null>(
@@ -74,7 +74,6 @@ export default function ExpenditurePage() {
       sortBy: "transactionDate",
       sortOrder: "desc",
     };
-    if (!isEmployer && activeEmployerId) params.employerId = activeEmployerId;
     if (from) params.from = from;
     if (to) params.to = to;
     try {
@@ -85,7 +84,6 @@ export default function ExpenditurePage() {
       const fromList = totalsFromList(list);
       try {
         const sumParams: Record<string, string> = {};
-        if (!isEmployer && activeEmployerId) sumParams.employerId = activeEmployerId;
         if (from) sumParams.from = from;
         if (to) sumParams.to = to;
         const sum = await api.get<ApiSuccess<{ credit: number; debit: number; balance: number }>>(
@@ -108,7 +106,9 @@ export default function ExpenditurePage() {
 
   useEffect(() => {
     void load();
-  }, [isEmployer, activeEmployerId, t, month]);
+    // Employee expenses are personal (not company-scoped)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEmployer, t, month]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -142,10 +142,6 @@ export default function ExpenditurePage() {
       setError(t("amountRequired"));
       return;
     }
-    if (!isEmployer && !activeEmployerId) {
-      setError(t("selectCompanyFirst"));
-      return;
-    }
     setSaving(true);
     try {
       let attachmentUrl: string | undefined;
@@ -164,7 +160,6 @@ export default function ExpenditurePage() {
         ...form,
         amount: Number(form.amount),
         attachmentUrl,
-        employerId: !isEmployer ? activeEmployerId : undefined,
       });
       setForm({
         type: "debit",

@@ -97,6 +97,13 @@ function NavIcon({ name }: { name: string }) {
           <path d="M12 21s-7-5.2-7-11a7 7 0 1 1 14 0c0 5.8-7 11-7 11z" />
         </svg>
       );
+    case "user":
+      return (
+        <svg {...common}>
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="3" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -130,7 +137,10 @@ export function AppLayout() {
   const employerGroups: NavGroup[] = [
     {
       labelKey: "navGroupOverview",
-      items: [{ to: "/app", end: true, key: "dashboard", icon: "dashboard" }],
+      items: [
+        { to: "/app", end: true, key: "dashboard", icon: "dashboard" },
+        { to: "/app/profile", key: "profile", icon: "user" },
+      ],
     },
     {
       labelKey: "navGroupTeam",
@@ -159,7 +169,10 @@ export function AppLayout() {
   const employeeGroups: NavGroup[] = [
     {
       labelKey: "navGroupOverview",
-      items: [{ to: "/app", end: true, key: "dashboard", icon: "dashboard" }],
+      items: [
+        { to: "/app", end: true, key: "dashboard", icon: "dashboard" },
+        { to: "/app/profile", key: "profile", icon: "user" },
+      ],
     },
     {
       labelKey: "navGroupWork",

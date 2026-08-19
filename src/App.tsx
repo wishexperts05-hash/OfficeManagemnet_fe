@@ -13,6 +13,7 @@ import ExpenditurePage from "./pages/ExpenditurePage";
 import AttendancePage from "./pages/AttendancePage";
 import SalaryPage from "./pages/SalaryPage";
 import TrackingPage from "./pages/TrackingPage";
+import ProfilePage from "./pages/ProfilePage";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/select-company" element={<SelectCompanyPage />} />
           <Route path="/app" element={<AppLayout />}>
             <Route index element={<DashboardPage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="employees" element={<EmployeesPage />} />
             <Route path="sites" element={<SitesPage />} />
             <Route path="tasks" element={<TasksPage />} />
