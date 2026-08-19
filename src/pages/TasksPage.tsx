@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, getErrorMessage, type ApiSuccess } from "../lib/api";
 import type { OfficeEmployee, Task } from "../lib/types";
@@ -57,6 +57,11 @@ export default function TasksPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [employeeFilter, setEmployeeFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("");
+  const [employeeQuery, setEmployeeQuery] = useState("");
+  const [empPickerOpen, setEmpPickerOpen] = useState(false);
+  const empPickerRef = useRef<HTMLDivElement>(null);
 
   const load = async () => {
     setLoading(true);
@@ -82,6 +87,18 @@ export default function TasksPage() {
     }
   }, [isEmployer, activeEmployerId, t]);
 
+  useEffect(() => {
+    if (!empPickerOpen) return;
+    const onPointerDown = (e: MouseEvent) => {
+      if (empPickerRef.current && !empPickerRef.current.contains(e.target as Node)) {
+        setEmpPickerOpen(false);
+        setEmployeeQuery("");
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, [empPickerOpen]);
+
   const selectedTask = useMemo(
     () => items.find((task) => task._id === editingId) || null,
     [editingId, items],
@@ -92,6 +109,22 @@ export default function TasksPage() {
     employees.forEach((e) => map.set(e._id, e.fullName));
     return map;
   }, [employees]);
+
+  const filterEmployeeList = useMemo(() => {
+    const q = employeeQuery.trim().toLowerCase();
+    if (!q) return employees;
+    return employees.filter(
+      (e) =>
+        e.fullName.toLowerCase().includes(q) ||
+        e.mobile.includes(q) ||
+        (e.designation || "").toLowerCase().includes(q),
+    );
+  }, [employeeQuery, employees]);
+
+  const selectedEmployeeLabel = useMemo(() => {
+    if (employeeFilter === "all") return t("allEmployees");
+    return employees.find((e) => e._id === employeeFilter)?.fullName || t("employees");
+  }, [employeeFilter, employees, t]);
 
   const assigneeFiltered = useMemo(() => {
     const q = assigneeQuery.trim().toLowerCase();
@@ -113,9 +146,20 @@ export default function TasksPage() {
         (task.description || "").toLowerCase().includes(q);
       const matchesStatus = statusFilter === "all" || task.status === statusFilter;
       const matchesPriority = priorityFilter === "all" || task.priority === priorityFilter;
-      return matchesQ && matchesStatus && matchesPriority;
+      const matchesEmployee =
+        employeeFilter === "all" ||
+        (task.assignedToEmployeeIds || []).includes(employeeFilter);
+      const due = task.dueDate?.slice(0, 10) || "";
+      const matchesDate = !dateFilter || due === dateFilter;
+      return matchesQ && matchesStatus && matchesPriority && matchesEmployee && matchesDate;
     });
-  }, [items, priorityFilter, query, statusFilter]);
+  }, [dateFilter, employeeFilter, items, priorityFilter, query, statusFilter]);
+
+  const pickEmployeeFilter = (id: string) => {
+    setEmployeeFilter(id);
+    setEmpPickerOpen(false);
+    setEmployeeQuery("");
+  };
 
   const metrics = useMemo(() => {
     const todo = items.filter((t) => t.status === "todo").length;
@@ -245,6 +289,75 @@ export default function TasksPage() {
               placeholder={t("searchTasks")}
               onChange={(e) => setQuery(e.target.value)}
             />
+            {isEmployer ? (
+              <div className="field" style={{ marginBottom: 0 }} ref={empPickerRef}>
+                <div className={`att-emp-combo${empPickerOpen ? " open" : ""}`}>
+                  <button
+                    type="button"
+                    className="att-emp-trigger"
+                    aria-expanded={empPickerOpen}
+                    onClick={() => setEmpPickerOpen((o) => !o)}
+                  >
+                    <span className="att-emp-trigger-label">{selectedEmployeeLabel}</span>
+                    <span className="att-emp-caret" aria-hidden>
+                      ▾
+                    </span>
+                  </button>
+                  {empPickerOpen ? (
+                    <div className="att-emp-menu">
+                      <input
+                        className="input att-emp-search"
+                        autoFocus
+                        value={employeeQuery}
+                        placeholder={t("searchEmployees")}
+                        onChange={(e) => setEmployeeQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") {
+                            setEmpPickerOpen(false);
+                            setEmployeeQuery("");
+                          }
+                        }}
+                      />
+                      <div className="att-emp-options">
+                        {!employeeQuery.trim() ||
+                        t("allEmployees").toLowerCase().includes(employeeQuery.trim().toLowerCase()) ? (
+                          <button
+                            type="button"
+                            className={`att-emp-option${employeeFilter === "all" ? " active" : ""}`}
+                            onClick={() => pickEmployeeFilter("all")}
+                          >
+                            {t("allEmployees")}
+                          </button>
+                        ) : null}
+                        {filterEmployeeList.map((emp) => (
+                          <button
+                            key={emp._id}
+                            type="button"
+                            className={`att-emp-option${employeeFilter === emp._id ? " active" : ""}`}
+                            onClick={() => pickEmployeeFilter(emp._id)}
+                          >
+                            <span className="att-emp-option-name">{emp.fullName}</span>
+                            <span className="muted att-emp-option-sub">
+                              {[emp.designation, emp.mobile].filter(Boolean).join(" · ")}
+                            </span>
+                          </button>
+                        ))}
+                        {filterEmployeeList.length === 0 ? (
+                          <p className="muted att-emp-empty">{t("noData")}</p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+            <input
+              className="input"
+              type="date"
+              value={dateFilter}
+              title={t("dueDate")}
+              onChange={(e) => setDateFilter(e.target.value)}
+            />
             <select className="select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="all">{t("allStatus")}</option>
               <option value="todo">{t("taskStatus.todo")}</option>
@@ -259,6 +372,18 @@ export default function TasksPage() {
               <option value="high">{t("priorityHigh")}</option>
               <option value="urgent">{t("priorityUrgent")}</option>
             </select>
+            {dateFilter || employeeFilter !== "all" ? (
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => {
+                  setDateFilter("");
+                  setEmployeeFilter("all");
+                }}
+              >
+                {t("clear")}
+              </button>
+            ) : null}
           </div>
 
           {loading ? (
