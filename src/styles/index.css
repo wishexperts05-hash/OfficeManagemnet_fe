@@ -12,7 +12,7 @@
   --ok: #047857;
   --shadow: 0 12px 40px rgba(12, 31, 46, 0.07);
   --sidebar: #0b1524;
-  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-family: "Noto Serif", "Noto Serif Devanagari", Georgia, serif;
   color: var(--ink);
   background: var(--paper);
   line-height: 1.5;
@@ -28,7 +28,7 @@ a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 
 h1, h2, h3, .display {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: "Noto Serif", "Noto Serif Devanagari", Georgia, serif;
   letter-spacing: -0.02em;
   font-weight: 600;
 }
@@ -71,7 +71,7 @@ h1, h2, h3, .display {
 }
 .brand-text { min-width: 0; }
 .brand-title {
-  font-family: "Fraunces", Georgia, serif; font-size: 1.05rem; line-height: 1.2;
+  font-family: "Noto Serif", "Noto Serif Devanagari", Georgia, serif; font-size: 1.05rem; line-height: 1.2;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px;
 }
 .brand-sub { font-size: 0.72rem; color: rgba(255,255,255,0.55); font-weight: 600; margin-top: 0.1rem; }
@@ -185,7 +185,7 @@ h1, h2, h3, .display {
 
 .chart-card { min-height: 100%; }
 .chart-card-head { display: flex; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.4rem; align-items: flex-start; }
-.chart-card-title { margin: 0; font-size: 1.05rem; font-family: "Fraunces", Georgia, serif; }
+.chart-card-title { margin: 0; font-size: 1.05rem; font-family: "Noto Serif", "Noto Serif Devanagari", Georgia, serif; }
 .chart-card-sub { margin: 0.2rem 0 0; font-size: 0.82rem; }
 .chart-body { width: 100%; min-height: 240px; }
 
@@ -369,7 +369,7 @@ h1, h2, h3, .display {
 }
 .site-card-title {
   margin: 0; font-size: 1.05rem; display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: "Noto Serif", "Noto Serif Devanagari", Georgia, serif;
 }
 .site-card-meta { margin: 0.25rem 0 0; font-size: 0.85rem; }
 .site-card-actions { display: flex; gap: 0.35rem; flex-shrink: 0; }
@@ -677,7 +677,7 @@ h1, h2, h3, .display {
   gap: 0.45rem;
   align-items: center;
   flex-wrap: wrap;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: "Noto Serif", "Noto Serif Devanagari", Georgia, serif;
 }
 .salary-card-meta { margin: 0.25rem 0 0; font-size: 0.84rem; }
 .salary-net { text-align: right; }
