@@ -10,6 +10,7 @@ import {
 } from "../lib/types";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setActiveEmployer, setMemberships } from "../store/authSlice";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 export default function SelectCompanyPage() {
   const { t, i18n } = useTranslation();
@@ -82,6 +83,7 @@ export default function SelectCompanyPage() {
 
   return (
     <div className="auth-wrap">
+      <ThemeToggle className="auth-theme" />
       <div className="auth-card company-pick-card">
         <p className="eyebrow">{t("roleEmployee")}</p>
         <h1 className="display" style={{ fontSize: "1.7rem", margin: "0.25rem 0 0.4rem" }}>

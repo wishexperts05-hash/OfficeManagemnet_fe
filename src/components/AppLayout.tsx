@@ -16,6 +16,29 @@ import {
 } from "../lib/types";
 import i18n from "../i18n";
 import { PushRegistrar } from "./PushRegistrar";
+import { ThemeToggle } from "./ThemeToggle";
+
+const SIDEBAR_HIDDEN_KEY = "loomhire-office-sidebar-hidden";
+
+function readSidebarHidden() {
+  try {
+    return localStorage.getItem(SIDEBAR_HIDDEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function persistSidebarHidden(hidden: boolean) {
+  try {
+    localStorage.setItem(SIDEBAR_HIDDEN_KEY, hidden ? "1" : "0");
+  } catch {
+    // ignore
+  }
+}
+
+function isMobileNav() {
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 900px)").matches;
+}
 
 type NavItem = { to: string; end?: boolean; key: string; icon: string };
 type NavGroup = { labelKey: string; items: NavItem[] };
@@ -120,10 +143,28 @@ export function AppLayout() {
   const isEmployer = user?.accountType === "employer";
   const jobPortal = import.meta.env.VITE_JOB_PORTAL_URL || "http://localhost:3000/en";
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(readSidebarHidden);
 
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
+
+  const hideDesktopSidebar = () => {
+    setHidden(true);
+    persistSidebarHidden(true);
+  };
+
+  const toggleSidebar = () => {
+    if (isMobileNav()) {
+      setOpen((v) => !v);
+      return;
+    }
+    setHidden((v) => {
+      const next = !v;
+      persistSidebarHidden(next);
+      return next;
+    });
+  };
 
   const activeMembership = memberships.find((m) => String(m.employerId) === activeEmployerId);
   const brandName = isEmployer
@@ -227,6 +268,19 @@ export function AppLayout() {
             {isEmployer ? t("roleEmployer") : t("roleEmployee")}
           </div>
         </div>
+        <button
+          type="button"
+          className="sidebar-hide-btn"
+          aria-label={t("hideSidebar")}
+          title={t("hideSidebar")}
+          onClick={hideDesktopSidebar}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M9 4v16" />
+            <path d="M15 9l-3 3 3 3" />
+          </svg>
+        </button>
       </div>
 
       <nav className="sidebar-nav">
@@ -270,7 +324,7 @@ export function AppLayout() {
   );
 
   return (
-    <div className={`app-shell${open ? " sidebar-open" : ""}`}>
+    <div className={`app-shell${open ? " sidebar-open" : ""}${hidden ? " sidebar-hidden" : ""}`}>
       <PushRegistrar />
       {open && (
         <button
@@ -287,8 +341,9 @@ export function AppLayout() {
             <button
               type="button"
               className="menu-btn"
-              aria-label="Open menu"
-              onClick={() => setOpen(true)}
+              aria-label={hidden ? t("showSidebar") : t("hideSidebar")}
+              title={hidden ? t("showSidebar") : t("hideSidebar")}
+              onClick={toggleSidebar}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="3" y1="6" x2="21" y2="6" />
@@ -302,6 +357,7 @@ export function AppLayout() {
             </div>
           </div>
           <div className="row">
+            <ThemeToggle />
             {!isEmployer && memberships.length > 1 && (
               <select
                 className="select"

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api, getErrorMessage, type ApiSuccess } from "../lib/api";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { hydrate, setAccessToken, setMpinVerified } from "../store/authSlice";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 export default function MpinPage() {
   const { t } = useTranslation();
@@ -46,10 +47,11 @@ export default function MpinPage() {
 
   return (
     <div className="auth-wrap">
+      <ThemeToggle className="auth-theme" />
       <div className="auth-card">
-        <div className="display" style={{ fontSize: "1.8rem" }}>
+        <h1 className="auth-title" style={{ marginTop: 0 }}>
           {mode === "set" ? t("setMpin") : t("enterMpin")}
-        </div>
+        </h1>
         <p className="muted" style={{ marginTop: 8 }}>
           {t("mpinEveryOpenHint")}
         </p>
@@ -66,8 +68,7 @@ export default function MpinPage() {
         {error && <p className="error">{error}</p>}
         <button
           type="button"
-          className="btn"
-          style={{ width: "100%" }}
+          className="btn btn-block"
           disabled={loading || mpin.length !== 4}
           onClick={() => void submit()}
         >

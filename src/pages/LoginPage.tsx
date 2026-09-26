@@ -5,6 +5,7 @@ import { api, getErrorMessage, type ApiSuccess } from "../lib/api";
 import type { AuthUser } from "../lib/types";
 import { useAppDispatch } from "../store/hooks";
 import { setCredentials, setMpinVerified } from "../store/authSlice";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 type Role = "employer" | "office_employee";
 
@@ -75,13 +76,16 @@ export default function LoginPage() {
 
   return (
     <div className="auth-wrap">
+      <ThemeToggle className="auth-theme" />
       <div className="auth-card">
-        <div className="display" style={{ fontSize: "1.9rem" }}>
-          {t("brand")}
+        <div className="sidebar-brand">
+          <div className="brand-mark">L</div>
+          <div>
+            <div className="brand-title">{t("brand")}</div>
+            <div className="brand-sub">{t("mockOtp")}</div>
+          </div>
         </div>
-        <p className="muted" style={{ marginTop: 6 }}>
-          {t("mockOtp")}
-        </p>
+        <h1 className="auth-title">{t("login")}</h1>
 
         <div className="row" style={{ marginTop: 18 }}>
           <button
@@ -120,8 +124,7 @@ export default function LoginPage() {
             {error && <p className="error">{error}</p>}
             <button
               type="button"
-              className="btn"
-              style={{ width: "100%" }}
+              className="btn btn-block"
               disabled={loading || mobile.length !== 10}
               onClick={() => void sendOtp()}
             >
@@ -147,8 +150,7 @@ export default function LoginPage() {
             {error && <p className="error">{error}</p>}
             <button
               type="button"
-              className="btn"
-              style={{ width: "100%" }}
+              className="btn btn-block"
               disabled={loading || otp.length < 4}
               onClick={() => void verify()}
             >

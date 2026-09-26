@@ -4,7 +4,10 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import "./i18n";
 import "./styles/index.css";
+import { applyTheme, readPreferredTheme } from "./lib/theme";
 import App from "./App";
+
+applyTheme(readPreferredTheme());
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

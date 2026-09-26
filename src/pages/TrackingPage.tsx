@@ -146,7 +146,7 @@ export default function TrackingPage() {
             <GoogleMap mapContainerStyle={{ width: "100%", height: "100%" }} center={center} zoom={13}>
               {path.length > 0 && (
                 <>
-                  <Polyline path={path} options={{ strokeColor: "#0f766e", strokeWeight: 4 }} />
+                  <Polyline path={path} options={{ strokeColor: "#c8322b", strokeWeight: 4 }} />
                   <Marker position={path[0]} label="S" />
                   <Marker position={path[path.length - 1]} label="E" />
                 </>
